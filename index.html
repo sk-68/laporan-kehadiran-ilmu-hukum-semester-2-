@@ -66,8 +66,13 @@
     }
     #datetime {
       font-size: 18px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       font-weight: bold;
+    }
+    #hijri-date {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #555;
     }
     .jadwal-hari-ini {
       margin: 20px 0;
@@ -85,7 +90,7 @@
       border-radius: 5px;
     }
     .info-pertemuan {
-      background-color: #dc3545 ;
+      background-color: #dc3545;
       color: white;
       padding: 10px;
       border-radius: 8px;
@@ -121,6 +126,14 @@
       margin-bottom: 10px;
       color: #000000;
     }
+    .event-info {
+      background-color: #17a2b8;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -130,7 +143,9 @@
   <h2>ILMU HUKUM SEMESTER 2</h2>
   
   <div id="datetime"></div>
+  <div id="hijri-date"></div>
   <div id="infoPertemuan" class="info-pertemuan"></div>
+  <div id="eventInfo" class="event-info" style="display:none;"></div>
   
   <div class="jadwal-hari-ini" id="jadwalHariIni">
     <h3>Jadwal Kuliah Hari Ini</h3>
@@ -161,7 +176,9 @@
   <div id="roleInfo" class="role-info"></div>
   <div id="dosenInfo" class="dosen-info"></div>
   <div id="datetimeAbsensi"></div>
+  <div id="hijri-date-absensi"></div>
   <div id="infoPertemuanAbsensi" class="info-pertemuan"></div>
+  <div id="eventInfoAbsensi" class="event-info" style="display:none;"></div>
   <h2>Data Absensi</h2>
   <div id="tables"></div>
   <button onclick="logout()">Logout</button>
@@ -238,15 +255,25 @@
     secondWeek: new Date('2025-04-07'), // Minggu kedua 7 April 2025
     endDate: new Date('2025-07-21'),    // Minggu ke-16 21 Juli 2025
     holidays: [
-      holidays: [
-  { tanggal: new Date('2025-04-18'), label: "Jumat Agung" },
-  { tanggal: new Date('2025-05-01'), label: "Hari Buruh" },
-  { tanggal: new Date('2025-05-29'), label: "Kenaikan Isa Almasih" },
-  { tanggal: new Date('2025-06-06'), label: "Hari Raya Idul Adha" },
-  { tanggal: new Date('2025-05-22'), label: "UTS" },
-  { tanggal: new Date('2025-07-21'), label: "UAS" }
-]
-
+      new Date('2025-04-18'), // Jumat Agung
+      new Date('2025-05-01'), // Hari Buruh
+      new Date('2025-05-29'), // Kenaikan Isa Almasih
+      new Date('2025-06-07'), // Hari Raya Idul Adha
+    ],
+    uts: {
+      start: new Date('2025-05-12'),
+      end: new Date('2025-05-17')
+    },
+    uas: {
+      start: new Date('2025-07-07'),
+      end: new Date('2025-07-12')
+    },
+    islamicHolidays: [
+      { date: new Date('2025-03-29'), name: "1 Ramadan 1446 H" },
+      { date: new Date('2025-04-28'), name: "1 Syawal 1446 H (Idul Fitri)" },
+      { date: new Date('2025-06-07'), name: "10 Dzulhijjah 1446 H (Idul Adha)" },
+      { date: new Date('2025-06-16'), name: "1 Muharram 1447 H (Tahun Baru Hijriah)" }
+    ]
   };
 
   // Jadwal mata kuliah berdasarkan hari (0=Minggu, 1=Senin, ..., 6=Sabtu) beserta jam
@@ -311,6 +338,44 @@
     }
   };
 
+  // Fungsi untuk konversi ke tanggal Hijriah
+  function getHijriDate(gregorianDate) {
+    // Perkiraan konversi Gregorian ke Hijriah (tidak akurat 100%)
+    const gregYear = gregorianDate.getFullYear();
+    const gregMonth = gregorianDate.getMonth();
+    const gregDay = gregorianDate.getDate();
+    
+    // Perhitungan sederhana (tidak memperhitungkan perbedaan bulan)
+    const hijriOffset = Math.floor((gregYear - 622) * 0.9702);
+    let hijriYear = 1446 + hijriOffset;
+    
+    // Nama bulan Hijriah
+    const hijriMonths = [
+      "Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir",
+      "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban",
+      "Ramadan", "Syawal", "Dzulqa'dah", "Dzulhijjah"
+    ];
+    
+    // Hitung hari dalam tahun Hijriah (perkiraan)
+    const dayOfYear = Math.floor((gregorianDate - new Date(gregYear, 0, 0)) / (1000 * 60 * 60 * 24);
+    const hijriDayOfYear = dayOfYear * 0.97;
+    
+    let hijriMonth = Math.floor(hijriDayOfYear / 29.5) % 12;
+    let hijriDay = Math.floor(hijriDayOfYear % 29.5) + 1;
+    
+    // Siklus pasaran Jawa (5 hari)
+    const pasaran = ["Pahing", "Pon", "Wage", "Kliwon", "Legi"];
+    const pasaranIndex = Math.floor((gregorianDate - new Date(2025, 0, 1)) / (1000 * 60 * 60 * 24) % 5;
+    const hariPasaran = pasaran[Math.abs(Math.floor(pasaranIndex))];
+    
+    return {
+      year: hijriYear,
+      month: hijriMonths[hijriMonth],
+      day: hijriDay,
+      pasaran: hariPasaran
+    };
+  }
+
   // Fungsi untuk memeriksa apakah waktu saat ini berada dalam jam kuliah
   function isWaktuKuliah(jamKuliah) {
     const now = new Date();
@@ -335,80 +400,72 @@
     const namaHari = hari[now.getDay()];
     const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-    // 1. Hitung tanggal Hijriah (metode Umm al-Qura sederhana)
-    const hijriDate = convertToHijri(now);
-    const hijriStr = `${hijriDate.day} ${hijriDate.monthName} ${hijriDate.year} H`;
-
-    // 2. Hitung pasaran Jawa
-    const pasaran = getPasaran(now);
-
-    // Gabungkan semua info
-    const dateTimeStr = `${namaHari} ${pasaran}, ${tanggal} | ${jam} | Hijriah: ${hijriStr}`;
-    document.getElementById('datetime').textContent = dateTimeStr;
-}
-
-// Fungsi konversi tanggal Masehi ke Hijriah (sederhana, tidak 100% akurat, tapi cukup untuk info)
-function convertToHijri(date) {
-    // Konstanta dasar untuk konversi (metode aritmatika, beda 622 tahun)
-    // Referensi: https://en.wikipedia.org/wiki/Hijri_year
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    // Hitung jumlah hari sejak 1 Jan 1970 (epoch)
-    const epoch = Math.floor(date.getTime() / 86400000);
-
-    // Hitung perkiraan tanggal Hijriah
-    const islamicEpoch = 227015; // jumlah hari dari epoch (1 Jan 1970) ke 1 Muharram 1390 H
-    const daysSinceIslamicEpoch = epoch - islamicEpoch;
-    const islamicYear = 1390 + Math.floor(daysSinceIslamicEpoch / 354.367);
-    const dayOfYear = daysSinceIslamicEpoch % 354.367;
-
-    // Bulan Hijriah dan nama bulan (sederhana)
-    const months = ['Muharram', 'Safar', 'Rabiul Awal', 'Rabiul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban', 'Ramadhan', 'Syawal', 'Dzulkaidah', 'Dzulhijjah'];
-
-    // Hitung bulan dan tanggal Hijriah kasar
-    let monthIndex = Math.floor(dayOfYear / 29.53);
-    if (monthIndex > 11) monthIndex = 11;
-    const dayHijri = Math.floor(dayOfYear - (29.53 * monthIndex)) + 1;
-
-    return {
-        day: dayHijri,
-        monthName: months[monthIndex],
-        year: islamicYear
-    };
-}
-
-// Fungsi untuk hitung pasaran Jawa berdasarkan tanggal Masehi
-function getPasaran(date) {
-    // Pasaran berulang tiap 5 hari
-    const pasaranArray = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
-
-    // Pilih tanggal acuan pasaran, misal 1 Jan 1970 = Legi
-    const referenceDate = new Date(1970, 0, 1);
-    const diffDays = Math.floor((date - referenceDate) / 86400000);
-
-    // Pasaran index
-    const index = diffDays % 5;
-
-    return pasaranArray[index];
-}
-
-// Jalankan updateDateTime tiap 1 detik supaya update realtime
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
     
+    // Tanggal Masehi
+    const dateTimeStr = `${namaHari}, ${tanggal} | ${jam}`;
+    document.getElementById('datetime').textContent = dateTimeStr;
+    
+    // Tanggal Hijriah
+    const hijriDate = getHijriDate(now);
+    const hijriDateStr = `${hijriDate.day} ${hijriDate.month} ${hijriDate.year} H (${hijriDate.pasaran})`;
+    document.getElementById('hijri-date').textContent = hijriDateStr;
+    
+    // Info pertemuan dan event
     const pertemuanInfo = hitungPertemuan();
     document.getElementById('infoPertemuan').textContent = pertemuanInfo.status;
     
+    // Tampilkan info event jika ada
+    const eventInfo = checkAcademicEvents(now);
+    const eventElement = document.getElementById('eventInfo');
+    if (eventInfo) {
+      eventElement.textContent = eventInfo;
+      eventElement.style.display = 'block';
+    } else {
+      eventElement.style.display = 'none';
+    }
+    
+    // Update untuk absensi box jika sedang aktif
     if(document.getElementById('absensiBox').style.display !== 'none') {
       document.getElementById('datetimeAbsensi').textContent = dateTimeStr;
+      document.getElementById('hijri-date-absensi').textContent = hijriDateStr;
       document.getElementById('infoPertemuanAbsensi').textContent = pertemuanInfo.status;
+      
+      const eventAbsensiElement = document.getElementById('eventInfoAbsensi');
+      if (eventInfo) {
+        eventAbsensiElement.textContent = eventInfo;
+        eventAbsensiElement.style.display = 'block';
+      } else {
+        eventAbsensiElement.style.display = 'none';
+      }
     }
     
     return pertemuanInfo.pertemuan;
+  }
+
+  // Fungsi untuk mengecek event akademik (UTS, UAS, libur Islam)
+  function checkAcademicEvents(date) {
+    // Cek UTS
+    if (date >= kalenderAkademik.uts.start && date <= kalenderAkademik.uts.end) {
+      return "🔄 Sedang berlangsung Ujian Tengah Semester (UTS)";
+    }
+    
+    // Cek UAS
+    if (date >= kalenderAkademik.uas.start && date <= kalenderAkademik.uas.end) {
+      return "📚 Sedang berlangsung Ujian Akhir Semester (UAS)";
+    }
+    
+    // Cek hari raya Islam
+    const islamicHoliday = kalenderAkademik.islamicHolidays.find(h => 
+      h.date.getDate() === date.getDate() && 
+      h.date.getMonth() === date.getMonth() && 
+      h.date.getFullYear() === date.getFullYear()
+    );
+    
+    if (islamicHoliday) {
+      return `🎉 Hari ini ${islamicHoliday.name}`;
+    }
+    
+    return null;
   }
 
   // Fungsi untuk menampilkan jadwal hari ini
@@ -650,16 +707,14 @@ updateDateTime();
       };
     }
     
-   const libur = kalenderAkademik.holidays.find(holiday =>
-  holiday.tanggal.getTime() === today.getTime()
-);
-
-if (libur) {
-  return {
-    pertemuan: -1,
-    status: `📌 ${libur.label}`
-  };
-}
+    const isHoliday = kalenderAkademik.holidays.some(holiday => 
+      holiday.getTime() === today.getTime()
+    );
+    if (isHoliday) {
+      return { 
+        pertemuan: -1, 
+        status: "Hari Libur Nasional" 
+      };
     }
     
     let weekCount;

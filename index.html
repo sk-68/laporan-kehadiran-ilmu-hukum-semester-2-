@@ -326,24 +326,61 @@
 
   // Fungsi untuk memperbarui tanggal dan waktu
   function updateDateTime() {
-    const now = new Date();
-    const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const namaHari = hari[now.getDay()];
-    const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    const dateTimeStr = `${namaHari}, ${tanggal} | ${jam}`;
-    document.getElementById('datetime').textContent = dateTimeStr;
-    
-    const pertemuanInfo = hitungPertemuan();
-    document.getElementById('infoPertemuan').textContent = pertemuanInfo.status;
-    
-    if(document.getElementById('absensiBox').style.display !== 'none') {
-      document.getElementById('datetimeAbsensi').textContent = dateTimeStr;
-      document.getElementById('infoPertemuanAbsensi').textContent = pertemuanInfo.status;
-    }
-    
-    return pertemuanInfo.pertemuan;
+  const now = new Date();
+
+  // Fungsi konversi tanggal Masehi ke Hijriah (estimasi sederhana)
+  function toHijri(date) {
+    // Algoritma sederhana untuk estimasi Hijri (tidak 100% akurat tapi cukup untuk tampilan)
+    const dayMS = 24 * 60 * 60 * 1000;
+    const hijriEpoch = new Date(622, 6, 16); // 16 Juli 622 M = 1 Muharram 1 H
+    const diff = date - hijriEpoch;
+    const hijriDays = Math.floor(diff / dayMS);
+
+    const hijriYear = Math.floor(hijriDays / 354.367);
+    let daysInYear = hijriDays % 354.367;
+
+    // Bulan Hijriah rata-rata 29.53 hari
+    const hijriMonth = Math.floor(daysInYear / 29.53);
+    const hijriDay = Math.floor(daysInYear % 29.53) + 1;
+
+    const bulanHijri = ['Muharram', 'Safar', 'Rabiul Awal', 'Rabiul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya’ban', 'Ramadhan', 'Syawal', 'Dzulkaidah', 'Dzulhijjah'];
+
+    return `${hijriDay} ${bulanHijri[hijriMonth]} ${hijriYear + 1} H`;
+  }
+
+  // Pasaran Jawa (5 hari): Legi, Pahing, Pon, Wage, Kliwon
+  // Pasaran dimulai dari 1 Januari 2020 sebagai acuan, di mana 1 Jan 2020 adalah Legi
+  function getPasaran(date) {
+    const pasaranArr = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
+    const baseDate = new Date(2020, 0, 1); // 1 Januari 2020
+    const diffDays = Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
+    const pasaranIndex = diffDays % 5;
+    return pasaranArr[(pasaranIndex + 5) % 5]; // +5 supaya hasilnya selalu positif
+  }
+
+  // Jam (format 24 jam)
+  const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  // Buat string tanggal hijriah + pasaran
+  const tanggalHijri = toHijri(now);
+  const pasaranJawa = getPasaran(now);
+
+  const dateTimeStr = `${tanggalHijri} | Pasaran: ${pasaranJawa} | Jam: ${jam}`;
+
+  document.getElementById('datetime').textContent = dateTimeStr;
+
+  // Update info pertemuan tetap sama (masehi-based)
+  const pertemuanInfo = hitungPertemuan();
+  document.getElementById('infoPertemuan').textContent = pertemuanInfo.status;
+
+  if(document.getElementById('absensiBox').style.display !== 'none') {
+    document.getElementById('datetimeAbsensi').textContent = dateTimeStr;
+    document.getElementById('infoPertemuanAbsensi').textContent = pertemuanInfo.status;
+  }
+
+  return pertemuanInfo.pertemuan;
+}
+
   }
 
   // Fungsi untuk menampilkan jadwal hari ini

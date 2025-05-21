@@ -232,16 +232,37 @@
     "Hukum Tata Negara": "Kusroh Lailiyah, S.H., M.H."
   };
 
-  // KALENDER AKADEMIK 2025
-  const kalenderAkademik = {
-    startDate: new Date('2025-03-17'), // Minggu pertama 17 Maret 2025
-    secondWeek: new Date('2025-04-07'), // Minggu kedua 7 April 2025
-    endDate: new Date('2025-07-21'),    // Minggu ke-16 21 Juli 2025
-    holidays: [
-      new Date('2025-04-18'), // Jumat Agung
-      new Date('2025-05-01'), // Hari Buruh
-      new Date('2025-05-29'), // Kenaikan Isa Almasih
-      new Date('2025-06-07'), // Hari Raya Idul Adha
+  function setToMidnight(date) {
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+    const kalenderAkademik = {
+      startDate: setToMidnight(new Date('2025-03-17')), // Pertemuan 1
+      midtermWeek: setToMidnight(new Date('2025-05-19')), // Pertemuan 8
+      startDate: setToMidnight(new Date('2025-06-02')), // Pertemuan 9
+      startDate: setToMidnight(new Date('2025-07-21')), // Pertemuan 16
+      endDate: setToMidnight(new Date('2025-07-24')), // Akhir kuliah
+      holidays: [
+        { date: setToMidnight(new Date('2025-03-31')), name: " Hari Raya Idul Fitri 1446 H" },
+        { date: setToMidnight(new Date('2025-06-01')), name: " Hari Lahir Pancasila" },
+        { date: setToMidnight(new Date('2025-06-06')), name: "Idul Adha 1446 H" },
+        { date: setToMidnight(new Date('2025-06-27')), name: "Tahun Baru Islam 1447 H" }
+      ],
+      specialWeeks: {
+            start: setToMidnight(new Date('2025-05-22')),
+            end: setToMidnight(new Date('2025-05-28')),
+            name: "Ujian Tengah Semester "
+            start: setToMidnight(new Date('2025-05-28')),
+            end: setToMidnight(new Date('2025-05-31')),
+            name: "Libur UTS "
+            start: setToMidnight(new Date('2025-05-22')),
+            end: setToMidnight(new Date('2025-05-28')),
+            name: "Ujian Tengah Semester "
+            start: setToMidnight(new Date('2025-06-21')),
+            end: setToMidnight(new Date('2025-06-24')),
+            name: "Ujian Akhir Semester "
+       
+    };
     ]
   };
 

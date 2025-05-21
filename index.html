@@ -381,20 +381,7 @@
       document.getElementById('datetimeAbsensi').textContent = dateTimeStr;
       const absensiInfoElement = document.getElementById('infoPertemuanAbsensi');
       
-      if (pertemuanInfo.status.includes("UTS")) {
-        absensiInfoElement.className = "info-uts";
-        document.getElementById('examNotice').style.display = 'block';
-        document.getElementById('examNotice').innerHTML = `
-          <h3>Periode Ujian Tengah Semester (UTS)</h3>
-          <p>Tidak ada jadwal kuliah reguler selama periode UTS (22-28 Mei 2025).</p>
-        `;
-      } else if (pertemuanInfo.status.includes("UAS")) {
-        absensiInfoElement.className = "info-uas";
-        document.getElementById('examNotice').style.display = 'block';
-        document.getElementById('examNotice').innerHTML = `
-          <h3>Periode Ujian Akhir Semester (UAS)</h3>
-          <p>Tidak ada jadwal kuliah reguler selama periode UAS (21-24 Juli 2025).</p>
-        `;
+     
       } else {
         absensiInfoElement.className = "info-pertemuan";
         document.getElementById('examNotice').style.display = 'none';
@@ -413,11 +400,7 @@
     
     listMatkul.innerHTML = '';
     
-    // Jika sedang UTS atau UAS, tampilkan pesan khusus
-    if (pertemuanInfo.status.includes("UTS") || pertemuanInfo.status.includes("UAS")) {
-      listMatkul.innerHTML = '<p>Tidak ada jadwal kuliah reguler selama periode ujian.</p>';
-      return;
-    }
+
     
     const matkulHariIni = jadwalKuliah[hariIni];
     
@@ -497,16 +480,7 @@
 
     const pertemuanInfo = hitungPertemuan();
     
-    // Jika sedang UTS atau UAS, tampilkan pesan khusus dan jangan tampilkan tabel absensi
-    if (pertemuanInfo.status.includes("UTS") || pertemuanInfo.status.includes("UAS")) {
-      container.innerHTML = `
-        <div class="exam-notice">
-          <h3>Periode Ujian</h3>
-          <p>Sistem absensi tidak tersedia selama periode ujian (${pertemuanInfo.status}).</p>
-        </div>
-      `;
-      return;
-    }
+
 
     if (userRole === 'admin') {
       // Tampilan untuk admin - semua data
@@ -682,7 +656,7 @@
     if (today >= kalenderAkademik.utsStart && today <= kalenderAkademik.utsEnd) {
       return { 
         pertemuan: -2, 
-        status: "Ujian Tengah Semester (UTS) - 12-16 Mei 2025" 
+        status: "Ujian Tengah Semester (UTS) - 19-28 Mei 2025"
       };
     }
     
@@ -690,7 +664,7 @@
     if (today >= kalenderAkademik.uasStart && today <= kalenderAkademik.uasEnd) {
       return { 
         pertemuan: -3, 
-        status: "Ujian Akhir Semester (UAS) - 7-11 Juli 2025" 
+         status: "Ujian Akhir Semester (UAS) - 21-24 Juli 2025"
       };
     }
     

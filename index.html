@@ -566,22 +566,12 @@
       });
     } else {
       // Tampilan untuk mahasiswa - hanya data dirinya sendiri
-      const hariIni = new Date().getDay();
-      const matkulHariIni = jadwalKuliah[hariIni].map(m => m.nama);
-      
-      const mataKuliahYangDitampilkan = matkulHariIni.length > 0 ? matkulHariIni : semuaMataKuliah;
+      cconst mataKuliahYangDitampilkan = semuaMataKuliah; // Tampilkan semua matkul
 
-      if (matkulHariIni.length === 0) {
+       // (Opsional) Tambahkan info ke pengguna
         const info = document.createElement('p');
-        info.textContent = "Hari ini tidak ada jadwal kuliah. Menampilkan semua mata kuliah.";
-        container.appendChild(info);
-      }
-
-      mataKuliahYangDitampilkan.forEach(matkul => {
-        const table = document.createElement('table');
-        const caption = document.createElement('caption');
-        caption.textContent = `${matkul} (Pertemuan ke-${currentWeek})`;
-        table.appendChild(caption);
+       info.textContent = "Menampilkan daftar absensi Anda di semua mata kuliah.";
+         container.appendChild(info);
 
         // Info dosen
         const dosenRow = table.insertRow();
@@ -637,7 +627,7 @@
     if (today > kalenderAkademik.endDate) {
       return { 
         pertemuan: 17, 
-        status: "Perkuliahan telah berakhir (Sampai 21 Juli 2025)" 
+        status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)" 
       };
     }
     

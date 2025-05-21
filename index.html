@@ -230,38 +230,31 @@
     "Bahasa Indonesia": "Dina Ulaya Aziizah, S.E., M.M.",
     "Hukum Perdata": "Agan Sutanto, S.H., M.H.",
     "Hukum Tata Negara": "Kusroh Lailiyah, S.H., M.H."
+    
   };
 
   function setToMidnight(date) {
-      date.setHours(0, 0, 0, 0);
-      return date;
-    }
-    const kalenderAkademik = {
-      startDate: setToMidnight(new Date('2025-03-17')), // Pertemuan 1
-      midtermWeek: setToMidnight(new Date('2025-05-19')), // Pertemuan 8
-      startDate: setToMidnight(new Date('2025-06-02')), // Pertemuan 9
-      startDate: setToMidnight(new Date('2025-07-21')), // Pertemuan 16
-      endDate: setToMidnight(new Date('2025-07-24')), // Akhir kuliah
-      holidays: [
-        { date: setToMidnight(new Date('2025-03-31')), name: " Hari Raya Idul Fitri 1446 H" },
-        { date: setToMidnight(new Date('2025-06-01')), name: " Hari Lahir Pancasila" },
-        { date: setToMidnight(new Date('2025-06-06')), name: "Idul Adha 1446 H" },
-        { date: setToMidnight(new Date('2025-06-27')), name: "Tahun Baru Islam 1447 H" }
-      ],
-      specialWeeks: {
-            start: setToMidnight(new Date('2025-05-22')),
-            end: setToMidnight(new Date('2025-05-28')),
-            name: "Ujian Tengah Semester "
-            start: setToMidnight(new Date('2025-05-28')),
-            end: setToMidnight(new Date('2025-05-31')),
-            name: "Libur UTS "
-            start: setToMidnight(new Date('2025-05-22')),
-            end: setToMidnight(new Date('2025-05-28')),
-            name: "Ujian Tengah Semester "
-            start: setToMidnight(new Date('2025-06-21')),
-            end: setToMidnight(new Date('2025-06-24')),
-            name: "Ujian Akhir Semester "
-       
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+const kalenderAkademik = {
+  startPertemuan1: setToMidnight(new Date('2025-03-17')),  // Pertemuan 1 mulai 17 Maret
+  pertemuan9: setToMidnight(new Date('2025-06-02')),      // Pertemuan 9 mulai 2 Juni (sesuai permintaan)
+  pertemuan16: setToMidnight(new Date('2025-07-21')),     // Pertemuan 16
+  endDate: setToMidnight(new Date('2025-07-24')),         // Akhir kuliah
+  holidays: [
+    { date: setToMidnight(new Date('2025-03-31')), name: "Hari Raya Idul Fitri 1446 H" },
+    { date: setToMidnight(new Date('2025-06-01')), name: "Hari Lahir Pancasila" },
+    { date: setToMidnight(new Date('2025-06-06')), name: "Idul Adha 1446 H" },
+    { date: setToMidnight(new Date('2025-06-27')), name: "Tahun Baru Islam 1447 H" }
+  ],
+  specialWeeks: [
+    { start: setToMidnight(new Date('2025-05-19')), end: setToMidnight(new Date('2025-05-25')), name: "Ujian Tengah Semester" },
+    { start: setToMidnight(new Date('2025-05-26')), end: setToMidnight(new Date('2025-05-31')), name: "Libur UTS" },
+    { start: setToMidnight(new Date('2025-06-21')), end: setToMidnight(new Date('2025-06-24')), name: "Ujian Akhir Semester" }
+  ]
+};
     };
     ]
   };

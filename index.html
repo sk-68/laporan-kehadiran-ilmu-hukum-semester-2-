@@ -238,11 +238,15 @@
     secondWeek: new Date('2025-04-07'), // Minggu kedua 7 April 2025
     endDate: new Date('2025-07-21'),    // Minggu ke-16 21 Juli 2025
     holidays: [
-      new Date('2025-04-18'), // Jumat Agung
-      new Date('2025-05-01'), // Hari Buruh
-      new Date('2025-05-29'), // Kenaikan Isa Almasih
-      new Date('2025-06-07'), // Hari Raya Idul Adha
-    ]
+      holidays: [
+  { tanggal: new Date('2025-04-18'), label: "Jumat Agung" },
+  { tanggal: new Date('2025-05-01'), label: "Hari Buruh" },
+  { tanggal: new Date('2025-05-29'), label: "Kenaikan Isa Almasih" },
+  { tanggal: new Date('2025-06-06'), label: "Hari Raya Idul Adha" },
+  { tanggal: new Date('2025-05-22'), label: "UTS" },
+  { tanggal: new Date('2025-07-21'), label: "UAS" }
+]
+
   };
 
   // Jadwal mata kuliah berdasarkan hari (0=Minggu, 1=Senin, ..., 6=Sabtu) beserta jam
@@ -331,9 +335,70 @@
     const namaHari = hari[now.getDay()];
     const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    const dateTimeStr = `${namaHari}, ${tanggal} | ${jam}`;
+
+    // 1. Hitung tanggal Hijriah (metode Umm al-Qura sederhana)
+    const hijriDate = convertToHijri(now);
+    const hijriStr = `${hijriDate.day} ${hijriDate.monthName} ${hijriDate.year} H`;
+
+    // 2. Hitung pasaran Jawa
+    const pasaran = getPasaran(now);
+
+    // Gabungkan semua info
+    const dateTimeStr = `${namaHari} ${pasaran}, ${tanggal} | ${jam} | Hijriah: ${hijriStr}`;
     document.getElementById('datetime').textContent = dateTimeStr;
+}
+
+// Fungsi konversi tanggal Masehi ke Hijriah (sederhana, tidak 100% akurat, tapi cukup untuk info)
+function convertToHijri(date) {
+    // Konstanta dasar untuk konversi (metode aritmatika, beda 622 tahun)
+    // Referensi: https://en.wikipedia.org/wiki/Hijri_year
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    // Hitung jumlah hari sejak 1 Jan 1970 (epoch)
+    const epoch = Math.floor(date.getTime() / 86400000);
+
+    // Hitung perkiraan tanggal Hijriah
+    const islamicEpoch = 227015; // jumlah hari dari epoch (1 Jan 1970) ke 1 Muharram 1390 H
+    const daysSinceIslamicEpoch = epoch - islamicEpoch;
+    const islamicYear = 1390 + Math.floor(daysSinceIslamicEpoch / 354.367);
+    const dayOfYear = daysSinceIslamicEpoch % 354.367;
+
+    // Bulan Hijriah dan nama bulan (sederhana)
+    const months = ['Muharram', 'Safar', 'Rabiul Awal', 'Rabiul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban', 'Ramadhan', 'Syawal', 'Dzulkaidah', 'Dzulhijjah'];
+
+    // Hitung bulan dan tanggal Hijriah kasar
+    let monthIndex = Math.floor(dayOfYear / 29.53);
+    if (monthIndex > 11) monthIndex = 11;
+    const dayHijri = Math.floor(dayOfYear - (29.53 * monthIndex)) + 1;
+
+    return {
+        day: dayHijri,
+        monthName: months[monthIndex],
+        year: islamicYear
+    };
+}
+
+// Fungsi untuk hitung pasaran Jawa berdasarkan tanggal Masehi
+function getPasaran(date) {
+    // Pasaran berulang tiap 5 hari
+    const pasaranArray = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
+
+    // Pilih tanggal acuan pasaran, misal 1 Jan 1970 = Legi
+    const referenceDate = new Date(1970, 0, 1);
+    const diffDays = Math.floor((date - referenceDate) / 86400000);
+
+    // Pasaran index
+    const index = diffDays % 5;
+
+    return pasaranArray[index];
+}
+
+// Jalankan updateDateTime tiap 1 detik supaya update realtime
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
     
     const pertemuanInfo = hitungPertemuan();
     document.getElementById('infoPertemuan').textContent = pertemuanInfo.status;
@@ -585,14 +650,16 @@
       };
     }
     
-    const isHoliday = kalenderAkademik.holidays.some(holiday => 
-      holiday.getTime() === today.getTime()
-    );
-    if (isHoliday) {
-      return { 
-        pertemuan: -1, 
-        status: "Hari Libur Nasional" 
-      };
+   const libur = kalenderAkademik.holidays.find(holiday =>
+  holiday.tanggal.getTime() === today.getTime()
+);
+
+if (libur) {
+  return {
+    pertemuan: -1,
+    status: `📌 ${libur.label}`
+  };
+}
     }
     
     let weekCount;

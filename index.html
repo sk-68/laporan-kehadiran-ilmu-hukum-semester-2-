@@ -248,26 +248,71 @@
 
 
   const kalenderAkademik = {
-  startDate: new Date('2025-03-17'), // Pertemuan 1: 17 Maret 2025
-  midtermWeek: new Date('2025-05-19'), // Pertemuan 8 (UTS): 19 Mei 2025
-  endDate: new Date('2025-07-21'),    // Pertemuan 16 (UAS): 21 Juli 2025
+  startDate: new Date('2025-03-17'), // Pertemuan 1
   holidays: [
-    { date: new Date('2025-03-31'), name: "Hari Raya Nyepi" },
-    { date: new Date('2025-04-10'), name: "Wafat Isa Almasih" },
-    { date: new Date('2025-05-01'), name: "Hari Buruh Internasional" },
-    { date: new Date('2025-05-29'), name: "Kenaikan Isa Almasih" },
-    { date: new Date('2025-06-01'), name: "Hari Lahir Pancasila" },
-    { date: new Date('2025-06-06'), name: "Hari Raya Idul Adha 1446 H" },
-    { date: new Date('2025-07-07'), name: "Tahun Baru Islam 1447 H" },
-    { date: new Date('2025-07-17'), name: "Hari Kemerdekaan Indonesia (Cuti Bersama)" }
+    new Date('2025-03-31'),
+    new Date('2025-04-10'),
+    new Date('2025-05-01'),
+    new Date('2025-05-29'),
+    new Date('2025-06-01'),
+    new Date('2025-06-06'),
+    new Date('2025-07-07'),
+    new Date('2025-07-17')
   ],
   specialWeeks: {
     7: { date: new Date('2025-05-12'), name: "Minggu Tenang" },
-    8: { date: new Date('2025-05-19'), name: "Ujian Tengah Semester" },
+    8: { date: new Date('2025-05-19'), name: "Ujian Tengah Semester (UTS)" },
     15: { date: new Date('2025-07-14'), name: "Minggu Tenang" },
-    16: { date: new Date('2025-07-21'), name: "Ujian Akhir Semester" }
+    16: { date: new Date('2025-07-21'), name: "Ujian Akhir Semester (UAS)" }
   }
 };
+
+function toMidnight(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function isDateInList(date, list) {
+  const time = toMidnight(date).getTime();
+  return list.some(d => toMidnight(d).getTime() === time);
+}
+
+function getMeetingDates(totalMeetings) {
+  let meetings = [];
+  let currentDate = new Date(kalenderAkademik.startDate);
+
+  while (meetings.length < totalMeetings) {
+    // Cek apakah minggu ini adalah libur atau special week yang bukan pertemuan biasa
+    if (
+      !isDateInList(currentDate, kalenderAkademik.holidays) &&
+      !Object.values(kalenderAkademik.specialWeeks)
+        .some(week => toMidnight(week.date).getTime() === toMidnight(currentDate).getTime() &&
+                     week.name.toLowerCase().includes("minggu tenang"))
+    ) {
+      // Tambah tanggal pertemuan
+      meetings.push(new Date(currentDate));
+    }
+    // Lanjut ke minggu berikutnya
+    currentDate.setDate(currentDate.getDate() + 7);
+  }
+  return meetings;
+}
+
+const meetings = getMeetingDates(16);
+
+meetings.forEach((date, index) => {
+  const pertemuanKe = index + 1;
+  let label = `Pertemuan ke-${pertemuanKe}: ${date.toDateString()}`;
+
+  // Tandai UTS dan UAS sesuai specialWeeks
+  if (kalenderAkademik.specialWeeks[pertemuanKe]) {
+    label += ` <-- ${kalenderAkademik.specialWeeks[pertemuanKe].name}`;
+  }
+
+  console.log(label);
+});
+
 
 // Jadwal mata kuliah berdasarkan hari (0=Minggu, 1=Senin, ..., 6=Sabtu) beserta jam
   const jadwalKuliah = {

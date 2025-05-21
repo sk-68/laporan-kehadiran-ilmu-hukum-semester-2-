@@ -386,14 +386,14 @@
         document.getElementById('examNotice').style.display = 'block';
         document.getElementById('examNotice').innerHTML = `
           <h3>Periode Ujian Tengah Semester (UTS)</h3>
-          <p>Tidak ada jadwal kuliah reguler selama periode UTS (12-16 Mei 2025).</p>
+          <p>Tidak ada jadwal kuliah reguler selama periode UTS (22-28 Mei 2025).</p>
         `;
       } else if (pertemuanInfo.status.includes("UAS")) {
         absensiInfoElement.className = "info-uas";
         document.getElementById('examNotice').style.display = 'block';
         document.getElementById('examNotice').innerHTML = `
           <h3>Periode Ujian Akhir Semester (UAS)</h3>
-          <p>Tidak ada jadwal kuliah reguler selama periode UAS (7-11 Juli 2025).</p>
+          <p>Tidak ada jadwal kuliah reguler selama periode UAS (21-24 Juli 2025).</p>
         `;
       } else {
         absensiInfoElement.className = "info-pertemuan";

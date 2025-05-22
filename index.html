@@ -14,7 +14,223 @@
     }
     .login, .absensi {
       background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;# Menyusun ulang versi lengkap HTML berdasarkan instruksi user sebelumnya
+# Fitur yang diminta:
+# 1. Running text untuk info pertemuan
+# 2. Logo bisa muter jika diklik
+# 3. Logo berada di bawah running text info pertemuan
+# 4. Tambahan running text untuk hari libur nasional di bawah login page
+
+html_output = """
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Absensi dengan Kalender Akademik</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      font-family: Arial, sans-serif;
+      color: #000;
+      text-align: center;
+      margin: 0; padding: 0;
+    }
+    .login {
+      background: rgba(255, 255, 255, 0.95);
       border-radius: 15px;
+      padding: 30px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: 0 0 10px #888;
+    }
+    img.logo {
+      max-width: 120px;
+      margin: 20px auto;
+      display: block;
+      cursor: pointer;
+    }
+    .rotate {
+      animation: spin 2s linear;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .running-container {
+      width: 100%;
+      overflow: hidden;
+      background: #dc3545;
+      color: white;
+      font-weight: bold;
+      padding: 10px 0;
+      box-sizing: border-box;
+    }
+    .running-text {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: runText 15s linear infinite;
+    }
+    @keyframes runText {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    #datetime {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="password"] {
+      padding: 8px;
+      width: 60%;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #loginError {
+      color: red;
+      margin-top: 10px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login">
+    <div id="datetime">Memuat waktu...</div>
+
+    <!-- Running text info pertemuan -->
+    <div class="running-container">
+      <div class="running-text" id="infoPertemuanText">Memuat info pertemuan...</div>
+    </div>
+
+    <!-- Logo bisa diputar -->
+    <img src="logobaru-removebg-preview.png" class="logo" id="logo" onclick="putarLogo()" alt="Logo" />
+
+    <!-- Running text hari libur -->
+    <div class="running-container" style="background:#28a745;">
+      <div class="running-text" id="infoLiburText">Memuat info hari libur...</div>
+    </div>
+
+    <!-- Form Login -->
+    <h2>ILMU HUKUM SEMESTER 2</h2>
+    <input type="text" id="username" placeholder="Username" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <button onclick="login()">Masuk</button>
+    <p id="loginError"></p>
+  </div>
+
+  <script>
+    const kalenderAkademik = {
+      startDate: new Date('2025-03-17'),
+      secondWeek: new Date('2025-04-07'),
+      endDate: new Date('2025-07-21'),
+      holidays: [
+        { date: new Date('2025-04-18'), name: "Jumat Agung" },
+        { date: new Date('2025-05-01'), name: "Hari Buruh Internasional" },
+        { date: new Date('2025-05-29'), name: "Kenaikan Isa Almasih" },
+        { date: new Date('2025-06-07'), name: "Hari Raya Idul Adha 1446 H" },
+        { date: new Date('2025-03-22'), name: "Hari Raya Nyepi" },
+        { date: new Date('2025-04-02'), name: "Isra Mi'raj Nabi Muhammad SAW" },
+        { date: new Date('2025-05-12'), name: "Hari Raya Waisak" },
+        { date: new Date('2025-06-01'), name: "Hari Lahir Pancasila" },
+        { date: new Date('2025-08-17'), name: "Hari Kemerdekaan RI" }
+      ]
+    };
+
+    function putarLogo() {
+      const logo = document.getElementById('logo');
+      logo.classList.add('rotate');
+      setTimeout(() => logo.classList.remove('rotate'), 2000);
+    }
+
+    function hitungPertemuan() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (today < kalenderAkademik.startDate) {
+        return "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)";
+      }
+      if (today > kalenderAkademik.endDate) {
+        return "Perkuliahan telah berakhir (Sampai 21 Juli 2025)";
+      }
+
+      const isHoliday = kalenderAkademik.holidays.find(h => {
+        const d = new Date(h.date);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime() === today.getTime();
+      });
+      if (isHoliday) return `Hari Libur Nasional: ${isHoliday.name}`;
+
+      let weekCount;
+      if (today >= kalenderAkademik.startDate && today < kalenderAkademik.secondWeek) {
+        weekCount = 1;
+      } else {
+        const diff = today - kalenderAkademik.secondWeek;
+        weekCount = 2 + Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+        weekCount = Math.min(weekCount, 16);
+      }
+      return `Pertemuan ke-${weekCount} (Minggu ke-${weekCount}) - Semester Genap 2024/2025`;
+    }
+
+    function updateInfo() {
+      const now = new Date();
+      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const namaHari = hari[now.getDay()];
+      const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('datetime').textContent = `${namaHari}, ${tanggal} | ${jam}`;
+
+      // Update running teks pertemuan
+      document.getElementById('infoPertemuanText').textContent = hitungPertemuan();
+
+      // Update running teks hari libur
+      const libur = kalenderAkademik.holidays.find(h => {
+        const liburDate = new Date(h.date);
+        liburDate.setHours(0, 0, 0, 0);
+        return liburDate.getTime() === now.setHours(0, 0, 0, 0);
+      });
+      if (libur) {
+        document.getElementById('infoLiburText').textContent = `Hari ini libur: ${libur.name}`;
+      } else {
+        document.getElementById('infoLiburText').textContent = "Tidak ada hari libur nasional hari ini.";
+      }
+    }
+
+    setInterval(updateInfo, 1000);
+    updateInfo();
+
+    function login() {
+      const user = document.getElementById('username').value.trim().toLowerCase();
+      const pass = document.getElementById('password').value.trim();
+      const loginError = document.getElementById('loginError');
+
+      if (user === "admin" && pass === "admin") {
+        loginError.textContent = "Login berhasil (simulasi).";
+      } else {
+        loginError.textContent = "Username atau password salah!";
+      }
+    }
+  </script>
+</body>
+</html>
+"""
+
+# Simpan file HTML hasil modifikasi lengkap
+with open("/mnt/data/absensi_runing_logo_libur_fix.html", "w", encoding="utf-8") as f:
+    f.write(html_output)
+
+"/mnt/data/absensi_runing_logo_libur_fix.html"
+
       padding: 20px;
       margin: 40px auto;
       width: 90%;

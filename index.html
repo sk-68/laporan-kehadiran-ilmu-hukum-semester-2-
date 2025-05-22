@@ -86,33 +86,22 @@
       border-radius: 5px;
     }
     .info-pertemuan {
-      background-color: #dc3545;
-      color: white;
-      padding: 10px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-weight: bold;
-      overflow: hidden;
-      white-space: nowrap;
+    background-color: #dc3545;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-weight: bold;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
     }
-    .running-text-container {
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      box-sizing: border-box;
-      background-color: #fff;
-      padding: 10px 0;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-
-    }
-      .running-text {
-      display: inline-block;
-      padding-left: 100%;
-      animation: running-text 20s linear infinite;
-      font-size: 16px;
-      color: #333;
-      font-weight: bold;
+    .running-text {
+    display: inline-block;
+    white-space: nowrap;
+    position: absolute;
+    animation: running-text 20s linear infinite;
+    padding-right: 100%; /* Tambahkan ini untuk mencegah teks terpotong */
     }
     }
     .sedang-berjalan {
@@ -153,9 +142,9 @@
       font-weight: bold;
       animation: pulse 2s infinite;
     }
-    @keyframes running-text {
-      0% { transform: translateX(100); }
-      100% { transform: translateX(-100%); }
+     @keyframes running-text {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
     }
     
     .header {
@@ -391,8 +380,26 @@
     const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     
-    const dateTimeStr = `${namaHari}, ${tanggal} | ${jam}`;
-    document.getElementById('datetime').textContent = dateTimeStr;
+    document.getElementById('datetime').textContent = `${namaHari}, ${tanggal} | ${jam}`;
+    updateRunningText(); // Panggil fungsi update teks berjalan
+  }
+
+  // FUNGSI BARU UNTUK RUNNING TEXT
+  function updateRunningText() {
+    const pertemuanInfo = hitungPertemuan();
+    const runningTextElements = document.querySelectorAll('.running-text');
+    
+    runningTextElements.forEach(element => {
+      element.style.animation = 'none';
+      element.textContent = pertemuanInfo.status;
+      setTimeout(() => {
+        element.style.animation = 'running-text 20s linear infinite';
+      }, 10);
+    });
+  }
+
+  // GANTIKAN SETINTERVAL LAMA DENGAN INI
+  setInterval(updateDateTime, 1000);
     
     const pertemuanInfo = hitungPertemuan();
     

@@ -605,15 +605,17 @@ const specialWeeks = {
   }
 
   // Fungsi untuk menghitung pertemuan
-   function setToMidnight(date) {
+   // Fungsi bantu untuk set waktu ke tengah malam
+function setToMidnight(date) {
   date.setHours(0, 0, 0, 0);
   return date;
 }
 
+// Fungsi bantu untuk dapatkan rentang minggu
 function getWeekRange(startDate) {
   const start = setToMidnight(new Date(startDate));
   const end = new Date(start);
-  end.setDate(start.getDate() + 6); // 6 hari setelah start
+  end.setDate(start.getDate() + 6);
 
   const options = { day: 'numeric', month: 'long', year: 'numeric' };
   const startStr = start.toLocaleDateString('id-ID', options);
@@ -626,112 +628,114 @@ function generatePertemuanRanges(dates) {
   return dates.map(date => getWeekRange(date));
 }
 
-// Data tanggal pertemuan (pastikan sudah set ke midnight)
 const pertemuanDates = [
-  new Date('2025-03-17'),
-  new Date('2025-04-07'),
-  new Date('2025-04-14'),
-  new Date('2025-04-21'),
-  new Date('2025-04-28'),
-  new Date('2025-05-05'),
-  new Date('2025-05-12'),
-  new Date('2025-05-19'),
-  new Date('2025-06-02'),
-  new Date('2025-06-09'),
-  new Date('2025-06-16'),
-  new Date('2025-06-23'),
-  new Date('2025-06-30'),
-  new Date('2025-07-07'),
-  new Date('2025-07-14'),
-  new Date('2025-07-21'),
-].map(setToMidnight);
+  '2025-03-17', '2025-04-07', '2025-04-14', '2025-04-21',
+  '2025-04-28', '2025-05-05', '2025-05-12', '2025-05-19',
+  '2025-06-02', '2025-06-09', '2025-06-16', '2025-06-23',
+  '2025-06-30', '2025-07-07', '2025-07-14', '2025-07-21'
+].map(d => setToMidnight(new Date(d)));
 
-// Contoh data libur nasional
 const holidays = [
-  { date: setToMidnight(new Date('2025-04-01')), name: 'Hari Libur Contoh' },
-  // tambah data libur lain sesuai kebutuhan
+  ...Array.from({ length: 14 }, (_, i) => ({
+    date: setToMidnight(new Date(2025, 2, 24 + i)),
+    name: 'Libur Idul Fitri'
+  })),
+  { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' },
+  { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
+  { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
+  { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' },
 ];
 
-// Contoh data minggu khusus (UTS/UAS)
 const specialWeeks = {
   8: {
-    name: 'Minggu UTS',
+    name: 'Ujian Tengah Semester',
     startDate: setToMidnight(new Date('2025-05-22')),
     endDate: setToMidnight(new Date('2025-05-28')),
   },
   16: {
-    name: 'Minggu UAS',
+    name: 'Ujian Akhir Semester',
     startDate: setToMidnight(new Date('2025-07-21')),
     endDate: setToMidnight(new Date('2025-07-24')),
   }
 };
 
-function hitungPertemuan() {
-  const today = setToMidnight(new Date());
+function hitungPertemuan(currentDate = new Date()) {
+  const today = setToMidnight(currentDate);
 
-  if (today < pertemuanDates[0]) {
-    return {
-      pertemuan: 0,
-      status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)"
-    };
-  }
-
-  if (today > pertemuanDates[pertemuanDates.length - 1]) {
-    return {
-      pertemuan: pertemuanDates.length + 1,
-      status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)"
-    };
-  }
-
-  // Cek hari libur
+  // Cek hari libur nasional dulu (paling prioritas)
   const hariLibur = holidays.find(h => h.date.getTime() === today.getTime());
   if (hariLibur) {
     return {
       pertemuan: -1,
-      status: `Libur Nasional: ${hariLibur.name}`
+      status: `Libur Nasional: ${hariLibur.name}`,
+      labelColor: 'red'
     };
   }
 
-  // Cek minggu khusus (UTS/UAS)
+  // Cek apakah hari ini ada di salah satu minggu pertemuan
+  let pertemuanKe = -1;
+  for (let i = 0; i < pertemuanDates.length; i++) {
+    const start = pertemuanDates[i];
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+
+    if (today >= start && today <= end) {
+      pertemuanKe = i + 1;
+      break;
+    }
+  }
+
+  // Cek minggu khusus
   for (const [nomor, info] of Object.entries(specialWeeks)) {
     if (today >= info.startDate && today <= info.endDate) {
+      if (pertemuanKe !== -1) {
+        return {
+          pertemuan: parseInt(nomor),
+          status: `${info.name} (Pertemuan ke-${pertemuanKe})`,
+          labelColor: 'blue'
+        };
+      }
       return {
         pertemuan: parseInt(nomor),
-        status: `${info.name} (Minggu ke-${nomor})`
+        status: info.name,
+        labelColor: 'blue'
       };
     }
   }
 
-  // Cek hari pertemuan
-  const index = pertemuanDates.findIndex(t => t.getTime() === today.getTime());
-  if (index !== -1) {
-    const rentang = getWeekRange(pertemuanDates[index]);
+  // Jika hari ini pertemuan biasa
+  if (pertemuanKe !== -1) {
     return {
-      pertemuan: index + 1,
-      status: `Pertemuan ke-${index + 1} (${rentang})`
+      pertemuan: pertemuanKe,
+      status: `Pertemuan ke-${pertemuanKe}`,
+      labelColor: 'green'
     };
   }
 
-  // Jika bukan pertemuan, libur, atau minggu khusus
+  // Jika sebelum perkuliahan dimulai
+  if (today < pertemuanDates[0]) {
+    return {
+      pertemuan: 0,
+      status: 'Belum masuk periode perkuliahan (Mulai 17 Maret 2025)',
+      labelColor: 'gray'
+    };
+  }
+
+  // Jika setelah perkuliahan berakhir
+  if (today > pertemuanDates[pertemuanDates.length - 1]) {
+    return {
+      pertemuan: pertemuanDates.length + 1,
+      status: 'Perkuliahan telah berakhir (Sampai 28 Juli 2025)',
+      labelColor: 'gray'
+    };
+  }
+
+  // Selain itu
   return {
     pertemuan: -1,
-    status: "Bukan hari perkuliahan"
-  };
-}
+    status: 'Bukan hari perkuliahan',
+    labelColor: 'gray'
 
-// Contoh penggunaan:
-console.log(hitungPertemuan());
-console.log(generatePertemuanRanges(pertemuanDates));
-function getPertemuanFromDate(inputDate) {
-  const date = setToMidnight(new Date(inputDate));
-
-  for (let i = 0; i < pertemuanDates.length; i++) {
-    const start = pertemuanDates[i];
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6); // akhir minggu (Minggu)
-
-    if (date >= start && date <= end) {
-      return i + 1; // pertemuan ke-i+1
     };
   }
 

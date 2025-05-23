@@ -240,18 +240,25 @@
 
     // Kalender Akademik Semester 3 Ilmu Hukum 2025/2026
     const kalenderAkademik = {
-      startDate: setToMidnight(new Date('2025-09-22')), // Pertemuan 1
-      midtermWeek: setToMidnight(new Date('2025-11-10')), // Pertemuan 8
-      endDate: setToMidnight(new Date('2026-01-13')), // Akhir kuliah
-      holidays: [
-        { date: setToMidnight(new Date('2025-12-25')), name: "Hari Natal" },
-        { date: setToMidnight(new Date('2026-01-01')), name: "Tahun Baru 2026" }
-      ],
-      specialWeeks: {
-        7: { date: setToMidnight(new Date('2025-11-03')), name: "Minggu Tenang" },
-        8: { date: setToMidnight(new Date('2025-11-10')), name: "Ujian Tengah Semester" },
-        15: { date: setToMidnight(new Date('2025-12-29')), name: "Minggu Tenang" },
-        16: { date: setToMidnight(new Date('2026-01-06')), name: "Ujian Akhir Semester" }
+  startDate: setToMidnight(new Date('2025-03-17')), // Pertemuan 1
+  midtermWeek: setToMidnight(new Date('2025-05-22')), // Awal UTS
+  endDate: setToMidnight(new Date('2025-07-28')), // Akhir perkuliahan
+
+  holidays: [
+    // Libur Idul Fitri 24 Maret - 6 April
+    ...Array.from({ length: 14 }, (_, i) => ({
+      date: setToMidnight(new Date(2025, 2, 24 + i)), // bulan 2 = Maret (index 0-based)
+      name: 'Libur Idul Fitri'
+    })),
+    { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' }, // Kamis
+    { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
+    { date: setToMidnight(new Date('2025-06-07')), name: 'Hari Raya Idul Adha' },
+    { date: setToMidnight(new Date('2025-06-28')), name: 'Tahun Baru Islam' },
+  ],
+
+  specialWeeks: {
+    8: { date: setToMidnight(new Date('2025-05-22')), name: 'Ujian Tengah Semester (mulai)' },
+    16: { date: setToMidnight(new Date('2025-07-21')), name: 'Ujian Akhir Semester (mulai)' }
       }
     };
 
@@ -589,14 +596,14 @@
     if (today < kalenderAkademik.startDate) {
       return { 
         pertemuan: 0, 
-        status: "Belum masuk periode perkuliahan (Mulai 22 September 2025)" 
+        status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)" 
       };
     }
     
     if (today > kalenderAkademik.endDate) {
       return { 
         pertemuan: 17, 
-        status: "Perkuliahan telah berakhir (Sampai 13 Januari 2026)" 
+        status: "Perkuliahan telah berakhir (Sampai 28 Januari 2025)" 
       };
     }
     

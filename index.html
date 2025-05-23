@@ -646,6 +646,124 @@ const specialWeeks = {
     status: "Bukan hari perkuliahan"
     };
   }
+  function showAbsensi(user) {
+    const pertemuanInfo = hitungPertemuan();
+    const currentWeek = pertemuanInfo.pertemuan > 0 ? pertemuanInfo.pertemuan : 1;
+    
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('absensiBox').style.display = 'block';
+
+    const container = document.getElementById('tables');
+    container.innerHTML = '';
+
+    const userData = users[user];
+    if (!userData) {
+        container.innerHTML = '<p>Data pengguna tidak valid</p>';
+        return;
+    }
+
+    const userRole = userData.role;
+    const userName = userData.name;
+    const userTitle = userData.title || '';
+    const userGreeting = userData.greeting || '';
+
+    // Set welcome message
+    document.getElementById('greetingMessage').textContent = `Selamat datang, ${userGreeting} ${userName} ${userTitle}`;
+    document.getElementById('roleInfo').textContent = `Anda login sebagai: ${userRole === 'admin' ? 'Administrator' : userRole === 'lecturer' ? 'Dosen' : 'Mahasiswa'}`;
+    
+    if (userRole === 'lecturer') {
+        document.getElementById('dosenInfo').textContent = `Mata kuliah yang diampu: ${Array.isArray(userData.matkul) ? userData.matkul.join(', ') : userData.matkul}`;
+    }
+
+    // Fungsi pembuat tabel
+    function createTable(matkul) {
+        const table = document.createElement('table');
+        const caption = document.createElement('caption');
+        caption.textContent = `${matkul} (Pertemuan ke-${currentWeek})`;
+        table.appendChild(caption);
+
+        // Header info dosen
+        const dosenRow = table.insertRow();
+        const dosenCell = dosenRow.insertCell();
+        dosenCell.colSpan = 17;
+        dosenCell.textContent = `Dosen: ${dosenMatkul[matkul]}`;
+        dosenCell.style.textAlign = 'left';
+        dosenCell.style.fontStyle = 'italic';
+
+        // Header tabel
+        const header = table.insertRow();
+        header.insertCell().textContent = userRole === 'student' ? 'Pertemuan' : 'Nama Mahasiswa';
+        
+        for (let p = 1; p <= 16; p++) {
+            const th = document.createElement('th');
+            th.textContent = p;
+            header.appendChild(th);
+        }
+
+        // Isi tabel
+        if (userRole === 'student') {
+            const row = table.insertRow();
+            row.insertCell().textContent = 'Kehadiran';
+            
+            const absensi = dataAbsensi[user]?.[matkul] || { hadir: [], tidakHadir: [] };
+            
+            for (let p = 1; p <= 16; p++) {
+                const cell = row.insertCell();
+                if (absensi.hadir.includes(p)) {
+                    cell.innerHTML = '<span style="color:green">✔ Hadir</span>';
+                } else if (absensi.tidakHadir.includes(p)) {
+                    cell.innerHTML = '<span style="color:red">❌ Tidak Hadir</span>';
+                } else {
+                    cell.textContent = "-";
+                }
+            }
+        } else { // Admin atau Dosen
+            Object.keys(dataAbsensi).forEach(nama => {
+                const row = table.insertRow();
+                row.insertCell().textContent = nama.charAt(0).toUpperCase() + nome.slice(1);
+                
+                const absensi = dataAbsensi[nome]?.[matkul] || { hadir: [], tidakHadir: [] };
+                
+                for (let p = 1; p <= 16; p++) {
+                    const cell = row.insertCell();
+                    if (absensi.hadir.includes(p)) {
+                        cell.innerHTML = '<span style="color:green">✔</span>';
+                    } else if (absensi.tidakHadir.includes(p)) {
+                        cell.innerHTML = '<span style="color:red">❌</span>';
+                    } else {
+                        cell.textContent = "";
+                    }
+                }
+            });
+        }
+
+        return table;
+    }
+
+    // Tampilkan tabel sesuai role
+    if (userRole === 'admin') {
+        semuaMataKuliah.forEach(matkul => {
+            container.appendChild(createTable(matkul));
+        });
+    } else if (userRole === 'lecturer') {
+        const matkulDosen = Array.isArray(userData.matkul) ? userData.matkul : [userData.matkul];
+        matkulDosen.forEach(matkul => {
+            if (dosenMatkul[matkul]) { // Pastikan matkul valid
+                container.appendChild(createTable(matkul));
+            }
+        });
+    } else { // Mahasiswa
+        const hariIni = new Date().getDay();
+        const matkulHariIni = jadwalKuliah[hariIni]?.map(m => m.nama) || [];
+        const matkulToShow = matkulHariIni.length > 0 ? matkulHariIni : semuaMataKuliah;
+
+        matkulToShow.forEach(matkul => {
+            if (dataAbsensi[user]?.[matkul]) { // Pastikan ada data absensi
+                container.appendChild(createTable(matkul));
+            }
+        });
+    }
+}
 
   // Inisialisasi
   setInterval(updateDateTime, 1000);

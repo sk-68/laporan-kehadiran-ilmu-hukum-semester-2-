@@ -239,25 +239,40 @@
     }
 
     // Kalender Akademik Semester 3 Ilmu Hukum 2025/2026
-    const kalenderAkademik = {
-  startDate: setToMidnight(new Date('2025-03-17')), // Pertemuan 1
-  midtermWeek: setToMidnight(new Date('2025-05-22')), // Awal UTS
-  endDate: setToMidnight(new Date('2025-07-28')), // Akhir perkuliahan
+    const pertemuanDates = [
+  setToMidnight(new Date('2025-03-17')), // Pertemuan 1
+  setToMidnight(new Date('2025-04-07')), // Pertemuan 2
+  setToMidnight(new Date('2025-04-14')), // ...
+  setToMidnight(new Date('2025-04-21')),
+  setToMidnight(new Date('2025-04-28')),
+  setToMidnight(new Date('2025-05-05')),
+  setToMidnight(new Date('2025-05-12')),
+  setToMidnight(new Date('2025-05-19')),
+  // UTS 22–28 Mei dilewati
+  setToMidnight(new Date('2025-06-02')),
+  setToMidnight(new Date('2025-06-09')),
+  setToMidnight(new Date('2025-06-16')),
+  setToMidnight(new Date('2025-06-23')),
+  setToMidnight(new Date('2025-06-30')),
+  setToMidnight(new Date('2025-07-07')),
+  setToMidnight(new Date('2025-07-14')),
+  setToMidnight(new Date('2025-07-21')),
+];
 
-  holidays: [
-    // Libur Idul Fitri 24 Maret - 6 April
-    ...Array.from({ length: 14 }, (_, i) => ({
-      date: setToMidnight(new Date(2025, 2, 24 + i)), // bulan 2 = Maret (index 0-based)
-      name: 'Libur Idul Fitri'
-    })),
-    { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' }, // Kamis
-    { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
-    { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
-    { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' },
-  ],
+const holidays = [
+  // Libur Idul Fitri 24 Maret - 6 April
+  ...Array.from({ length: 14 }, (_, i) => ({
+    date: setToMidnight(new Date(2025, 2, 24 + i)), // bulan 2 = Maret
+    name: 'Libur Idul Fitri'
+  })),
+  { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' },
+  { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
+  { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
+  { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' },
+];
 
-  specialWeeks: {
-    8: {
+const specialWeeks = {
+  8: {
     startDate: setToMidnight(new Date('2025-05-22')),
     endDate: setToMidnight(new Date('2025-05-28')),
     name: 'Ujian Tengah Semester'
@@ -597,53 +612,47 @@
 
   // Fungsi untuk menghitung pertemuan
   function hitungPertemuan() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (today < kalenderAkademik.startDate) {
-      return { 
-        pertemuan: 0, 
-        status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)" 
-      };
-    }
-    
-    if (today > kalenderAkademik.endDate) {
-      return { 
-        pertemuan: 17, 
-        status: "Perkuliahan telah berakhir (Sampai 28 Januari 2025)" 
-      };
-    }
-    
-    // Cek libur nasional
-    const holiday = kalenderAkademik.holidays.find(h => 
-      h.date.getTime() === today.getTime()
-    );
-    if (holiday) {
-      return { 
-        pertemuan: -1, 
-        status: `Libur Nasional: ${holiday.name}` 
-      };
-    }
-    
-    // Cek minggu khusus
-    for (const [week, info] of Object.entries(kalenderAkademik.specialWeeks)) {
-      if (today.getTime() === info.date.getTime()) {
-        return { 
-          pertemuan: parseInt(week),
-          status: `${info.name} (Pertemuan ke-${week})`
-        };
-      }
-    }
-    
-    // Hitung minggu normal
-    const diffTime = today - kalenderAkademik.startDate;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    let weekCount = 1 + Math.floor(diffDays / 7);
-    weekCount = Math.min(weekCount, 16);
-    
-    return { 
-      pertemuan: weekCount,
-      status: `Pertemuan ke-${weekCount} (Minggu ke-${weekCount})`
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (today < pertemuanDates[0]) {
+    return {
+      pertemuan: 0,
+      status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)"
+    };
+  }
+
+  if (today > pertemuanDates[pertemuanDates.length - 1]) {
+    return {
+      pertemuan: 17,
+      status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)"
+    };
+  }
+
+  const holiday = holidays.find(h =>
+    h.date.getTime() === today.getTime()
+  );
+  if (holiday) {
+    return {
+      pertemuan: -1,
+      status: `Libur Nasional: ${holiday.name}`
+    };
+  }
+
+  const index = pertemuanDates.findIndex(t =>
+    t.getTime() === today.getTime()
+  );
+
+  if (index !== -1) {
+    return {
+      pertemuan: index + 1,
+      status: `Pertemuan ke-${index + 1}`
+    };
+  }
+
+  return {
+    pertemuan: -1,
+    status: "Bukan hari perkuliahan"
     };
   }
 

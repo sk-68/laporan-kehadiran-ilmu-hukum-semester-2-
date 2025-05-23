@@ -240,18 +240,50 @@
 
     // Kalender Akademik Semester 3 Ilmu Hukum 2025/2026
     const kalenderAkademik = {
-      startDate: setToMidnight(new Date('1245-03-22')), // Pertemuan 1
-      midtermWeek: setToMidnight(new Date('2025-11-10')), // Pertemuan 8
-      endDate: setToMidnight(new Date('2026-01-13')), // Akhir kuliah
-      holidays: [
-        { date: setToMidnight(new Date('2025-12-25')), name: "Hari Natal" },
-        { date: setToMidnight(new Date('2026-01-01')), name: "Tahun Baru 2026" }
-      ],
-      specialWeeks: {
-        7: { date: setToMidnight(new Date('2025-11-03')), name: "Minggu Tenang" },
-        8: { date: setToMidnight(new Date('2025-11-10')), name: "Ujian Tengah Semester" },
-        15: { date: setToMidnight(new Date('2025-12-29')), name: "Minggu Tenang" },
-        16: { date: setToMidnight(new Date('2026-01-06')), name: "Ujian Akhir Semester" }
+  startDate: setToMidnight(new Date('2025-03-17')), // Pertemuan 1
+  endDate: setToMidnight(new Date('2025-07-28')), // Akhir kuliah
+  
+  holidays: [
+    // Libur Idul Fitri mulai 24 Maret sampai 6 April
+    { date: setToMidnight(new Date('2025-03-24')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-25')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-26')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-27')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-28')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-29')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-30')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-03-31')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-01')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-02')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-03')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-04')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-05')), name: 'Libur Idul Fitri' },
+    { date: setToMidnight(new Date('2025-04-06')), name: 'Libur Idul Fitri' },
+  ],
+  
+  specialWeeks: {
+    2: { date: setToMidnight(new Date('2025-04-07')), name: 'Pertemuan ke-2' },
+    3: { date: setToMidnight(new Date('2025-04-14')), name: 'Pertemuan ke-3' },
+    4: { date: setToMidnight(new Date('2025-04-21')), name: 'Pertemuan ke-4' },
+    5: { date: setToMidnight(new Date('2025-04-28')), name: 'Pertemuan ke-5' },
+    6: { date: setToMidnight(new Date('2025-05-05')), name: 'Pertemuan ke-6' },
+    7: { date: setToMidnight(new Date('2025-05-12')), name: 'Pertemuan ke-7' },
+    8: { date: setToMidnight(new Date('2025-05-19')), name: 'Pertemuan ke-8' },
+    // Ujian Tengah Semester, minggu khusus 22 Mei - 28 Mei
+    9: { date: setToMidnight(new Date('2025-05-22')), name: 'Ujian Tengah Semester' }, 
+    10: { date: setToMidnight(new Date('2025-05-28')), name: 'Ujian Tengah Semester' },
+    // Pertemuan lanjut setelah UTS
+    11: { date: setToMidnight(new Date('2025-06-02')), name: 'Pertemuan ke-9' },
+    12: { date: setToMidnight(new Date('2025-06-09')), name: 'Pertemuan ke-10' },
+    13: { date: setToMidnight(new Date('2025-06-16')), name: 'Pertemuan ke-11' },
+    14: { date: setToMidnight(new Date('2025-06-23')), name: 'Pertemuan ke-12' },
+    15: { date: setToMidnight(new Date('2025-06-30')), name: 'Pertemuan ke-13' },
+    16: { date: setToMidnight(new Date('2025-07-07')), name: 'Pertemuan ke-14' },
+    17: { date: setToMidnight(new Date('2025-07-14')), name: 'Pertemuan ke-15' },
+    18: { date: setToMidnight(new Date('2025-07-21')), name: 'Pertemuan ke-16' },
+    // Ujian Akhir Semester 21 Juli - 24 Juli 2025
+    19: { date: setToMidnight(new Date('2025-07-21')), name: 'Ujian Akhir Semester' },
+    20: { date: setToMidnight(new Date('2025-07-24')), name: 'Ujian Akhir Semester' },
       }
     };
 

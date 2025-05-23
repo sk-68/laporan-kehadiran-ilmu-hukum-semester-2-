@@ -252,13 +252,20 @@
     })),
     { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' }, // Kamis
     { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
-    { date: setToMidnight(new Date('2025-06-07')), name: 'Hari Raya Idul Adha' },
-    { date: setToMidnight(new Date('2025-06-28')), name: 'Tahun Baru Islam' },
+    { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
+    { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' },
   ],
 
   specialWeeks: {
-    8: { date: setToMidnight(new Date('2025-05-22')), name: 'Ujian Tengah Semester (mulai)' },
-    16: { date: setToMidnight(new Date('2025-07-21')), name: 'Ujian Akhir Semester (mulai)' }
+    8: {
+    startDate: setToMidnight(new Date('2025-05-22')),
+    endDate: setToMidnight(new Date('2025-05-28')),
+    name: 'Ujian Tengah Semester'
+  },
+  16: {
+    startDate: setToMidnight(new Date('2025-07-21')),
+    endDate: setToMidnight(new Date('2025-07-24')),
+    name: 'Ujian Akhir Semester'
       }
     };
 

@@ -722,7 +722,16 @@ function hitungPertemuan() {
 // Contoh penggunaan:
 console.log(hitungPertemuan());
 console.log(generatePertemuanRanges(pertemuanDates));
+function getPertemuanFromDate(inputDate) {
+  const date = setToMidnight(new Date(inputDate));
 
+  for (let i = 0; i < pertemuanDates.length; i++) {
+    const start = pertemuanDates[i];
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6); // akhir minggu (Minggu)
+
+    if (date >= start && date <= end) {
+      return i + 1; // pertemuan ke-i+1
     };
   }
 

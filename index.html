@@ -605,136 +605,58 @@ const specialWeeks = {
   }
 
   // Fungsi untuk menghitung pertemuan
-   // Fungsi bantu untuk set waktu ke tengah malam
-function setToMidnight(date) {
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
+  function hitungPertemuan() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Pastikan jam nol untuk perbandingan yang akurat
 
-// Fungsi bantu untuk dapatkan rentang minggu
-function getWeekRange(startDate) {
-  const start = setToMidnight(new Date(startDate));
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-
-  const options = { day: 'numeric', month: 'long', year: 'numeric' };
-  const startStr = start.toLocaleDateString('id-ID', options);
-  const endStr = end.toLocaleDateString('id-ID', options);
-
-  return `${startStr} - ${endStr}`;
-}
-
-function generatePertemuanRanges(dates) {
-  return dates.map(date => getWeekRange(date));
-}
-
-const pertemuanDates = [
-  '2025-03-17', '2025-04-07', '2025-04-14', '2025-04-21',
-  '2025-04-28', '2025-05-05', '2025-05-12', '2025-05-19',
-  '2025-06-02', '2025-06-09', '2025-06-16', '2025-06-23',
-  '2025-06-30', '2025-07-07', '2025-07-14', '2025-07-21'
-].map(d => setToMidnight(new Date(d)));
-
-const holidays = [
-  ...Array.from({ length: 14 }, (_, i) => ({
-    date: setToMidnight(new Date(2025, 2, 24 + i)),
-    name: 'Libur Idul Fitri'
-  })),
-  { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' },
-  { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
-  { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
-  { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' },
-];
-
-const specialWeeks = {
-  8: {
-    name: 'Ujian Tengah Semester',
-    startDate: setToMidnight(new Date('2025-05-22')),
-    endDate: setToMidnight(new Date('2025-05-28')),
-  },
-  16: {
-    name: 'Ujian Akhir Semester',
-    startDate: setToMidnight(new Date('2025-07-21')),
-    endDate: setToMidnight(new Date('2025-07-24')),
+  // Cek apakah hari ini sebelum atau setelah masa kuliah
+  if (today < pertemuanDates[0]) {
+    return {
+      pertemuan: 0,
+      status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)"
+    };
   }
-};
 
-function hitungPertemuan(currentDate = new Date()) {
-  const today = setToMidnight(currentDate);
+  if (today > pertemuanDates[pertemuanDates.length - 1]) {
+    return {
+      pertemuan: 17,
+      status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)"
+    };
+  }
 
-  // Cek hari libur nasional dulu (paling prioritas)
+  // Cek apakah hari ini libur nasional
   const hariLibur = holidays.find(h => h.date.getTime() === today.getTime());
   if (hariLibur) {
     return {
       pertemuan: -1,
-      status: `Libur Nasional: ${hariLibur.name}`,
-      labelColor: 'red'
+      status: `Libur Nasional: ${hariLibur.name}`
     };
   }
 
-  // Cek apakah hari ini ada di salah satu minggu pertemuan
-  let pertemuanKe = -1;
-  for (let i = 0; i < pertemuanDates.length; i++) {
-    const start = pertemuanDates[i];
-    const end = new Date(start);
-    end.setDate(end.getDate() + 6);
-
-    if (today >= start && today <= end) {
-      pertemuanKe = i + 1;
-      break;
-    }
-  }
-
-  // Cek minggu khusus
+  // Cek apakah hari ini termasuk minggu khusus (UTS/UAS)
   for (const [nomor, info] of Object.entries(specialWeeks)) {
     if (today >= info.startDate && today <= info.endDate) {
-      if (pertemuanKe !== -1) {
-        return {
-          pertemuan: parseInt(nomor),
-          status: `${info.name} (Pertemuan ke-${pertemuanKe})`,
-          labelColor: 'blue'
-        };
-      }
       return {
         pertemuan: parseInt(nomor),
-        status: info.name,
-        labelColor: 'blue'
+        status: `${info.name} (Minggu ke-${nomor})`
       };
     }
   }
 
-  // Jika hari ini pertemuan biasa
-  if (pertemuanKe !== -1) {
+  // Cek apakah hari ini termasuk salah satu tanggal pertemuan
+  const index = pertemuanDates.findIndex(t => t.getTime() === today.getTime());
+  if (index !== -1) {
     return {
-      pertemuan: pertemuanKe,
-      status: `Pertemuan ke-${pertemuanKe}`,
-      labelColor: 'green'
+      pertemuan: index + 1,
+      status: `Pertemuan ke-${index + 1}`
     };
   }
 
-  // Jika sebelum perkuliahan dimulai
-  if (today < pertemuanDates[0]) {
-    return {
-      pertemuan: 0,
-      status: 'Belum masuk periode perkuliahan (Mulai 17 Maret 2025)',
-      labelColor: 'gray'
-    };
-  }
-
-  // Jika setelah perkuliahan berakhir
-  if (today > pertemuanDates[pertemuanDates.length - 1]) {
-    return {
-      pertemuan: pertemuanDates.length + 1,
-      status: 'Perkuliahan telah berakhir (Sampai 28 Juli 2025)',
-      labelColor: 'gray'
-    };
-  }
-
-  // Selain itu
+  // Jika bukan hari pertemuan dan bukan libur dan bukan UTS/UAS
   return {
     pertemuan: -1,
-    status: 'Bukan hari perkuliahan',
-    labelColor: 'gray'
+    status: "Bukan hari perkuliahan"
+    };
 
     };
   }

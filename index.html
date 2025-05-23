@@ -677,25 +677,7 @@ function hitungPertemuan() {
     status: `Pertemuan ke-${mingguKe}`,
     labelColor: 'merah'
     };
-  // update tabel
-  function updateLabel() {
-  const result = hitungPertemuan();
-  const labelElement = document.getElementById('infoPertemuan');
-  if (!labelElement || !result) return;
-
-  labelElement.textContent = result.status;
-
-  switch (result.labelColor) {
-    case 'hijau':
-      labelElement.style.color = 'green';
-      break;
-    case 'biru':
-      labelElement.style.color = 'blue';
-      break;
-    case 'merah':
-    default:
-      labelElement.style.color = 'red';
-      break;
+ 
  
     }
 

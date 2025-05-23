@@ -658,11 +658,11 @@
     }
     
     // Cek minggu khusus
-    for (const [week, info] of Object.entries(kalenderAkademik.specialWeeks)) {
-      if (today.getTime() === info.date.getTime()) {
-        return { 
-          pertemuan: parseInt(week),
-          status: `${info.name} (Pertemuan ke-${week})`
+    const special = kalenderAkademik.specialWeeks.find(info => info.date.getTime() === today.getTime());
+if (special) {
+  return { 
+    pertemuan: special.week,
+    status: `${special.name} (Pertemuan ke-${special.week})`
         };
       }
     }

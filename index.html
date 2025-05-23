@@ -593,57 +593,59 @@ const specialWeeks = {
   }
 
   // Fungsi untuk menghitung pertemuan
- function hitungPertemuan() {
+function hitungPertemuan() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Pastikan jam nol untuk perbandingan yang akurat
+  today.setHours(0, 0, 0, 0); // Jam nol untuk perbandingan tepat
 
-  // Cek apakah hari ini sebelum atau setelah masa kuliah
-  if (today < pertemuanDates[0]) {
+  const startDate = pertemuanDates[0];
+  const endDate = pertemuanDates[pertemuanDates.length - 1];
+
+  // Cek apakah hari ini sebelum masa kuliah
+  if (today < startDate) {
     return {
       pertemuan: 0,
-      status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)"
+      status: "Belum masuk periode perkuliahan (Mulai 17 Maret 2025)",
+      warnaLabel: "merah"
     };
   }
 
-  if (today > pertemuanDates[pertemuanDates.length - 1]) {
+  // Cek apakah hari ini setelah masa kuliah
+  if (today > endDate) {
     return {
       pertemuan: 17,
-      status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)"
+      status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)",
+      warnaLabel: "merah"
     };
   }
 
-  // Cek apakah hari ini libur nasional
+  // Cek libur nasional
   const hariLibur = holidays.find(h => h.date.getTime() === today.getTime());
   if (hariLibur) {
     return {
-      pertemuan: -1,
-      status: `Libur Nasional: ${hariLibur.name}`
+      pertemuan: null,
+      status: `Libur Nasional: ${hariLibur.name}`,
+      warnaLabel: "hijau"
     };
   }
 
-  // Cek apakah hari ini termasuk minggu khusus (UTS/UAS)
+  // Hitung minggu ke berapa sejak startDate (setiap Senin berganti pertemuan)
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const mingguKe = Math.floor((today - startDate) / msPerWeek) + 1;
+
+  // Cek apakah minggu ke ini termasuk minggu khusus (UTS/UAS)
+  let warna = "merah"; // default warna pertemuan
   for (const [nomor, info] of Object.entries(specialWeeks)) {
+    // Cek apakah hari ini masuk dalam rentang minggu khusus
     if (today >= info.startDate && today <= info.endDate) {
-      return {
-        pertemuan: parseInt(nomor),
-        status: `${info.name} (Minggu ke-${nomor})`
-      };
+      warna = "biru";
+      break;
     }
   }
 
-  // Cek apakah hari ini termasuk salah satu tanggal pertemuan
-  const index = pertemuanDates.findIndex(t => t.getTime() === today.getTime());
-  if (index !== -1) {
-    return {
-      pertemuan: index + 1,
-      status: `Pertemuan ke-${index + 1}`
-    };
-  }
-
-  // Jika bukan hari pertemuan dan bukan libur dan bukan UTS/UAS
   return {
-    pertemuan: -1,
-    status: "Bukan hari perkuliahan"
+    pertemuan: mingguKe,
+    status: `Pertemuan ke-${mingguKe}`,
+    warnaLabel: warna
     };
   }
 

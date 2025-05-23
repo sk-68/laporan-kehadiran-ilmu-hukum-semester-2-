@@ -605,11 +605,70 @@ const specialWeeks = {
   }
 
   // Fungsi untuk menghitung pertemuan
-   function hitungPertemuan() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Pastikan jam nol untuk perbandingan yang akurat
+   function setToMidnight(date) {
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
 
-  // Cek apakah hari ini sebelum atau setelah masa kuliah
+function getWeekRange(startDate) {
+  const start = setToMidnight(new Date(startDate));
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6); // 6 hari setelah start
+
+  const options = { day: 'numeric', month: 'long', year: 'numeric' };
+  const startStr = start.toLocaleDateString('id-ID', options);
+  const endStr = end.toLocaleDateString('id-ID', options);
+
+  return `${startStr} - ${endStr}`;
+}
+
+function generatePertemuanRanges(dates) {
+  return dates.map(date => getWeekRange(date));
+}
+
+// Data tanggal pertemuan (pastikan sudah set ke midnight)
+const pertemuanDates = [
+  new Date('2025-03-17'),
+  new Date('2025-04-07'),
+  new Date('2025-04-14'),
+  new Date('2025-04-21'),
+  new Date('2025-04-28'),
+  new Date('2025-05-05'),
+  new Date('2025-05-12'),
+  new Date('2025-05-19'),
+  new Date('2025-06-02'),
+  new Date('2025-06-09'),
+  new Date('2025-06-16'),
+  new Date('2025-06-23'),
+  new Date('2025-06-30'),
+  new Date('2025-07-07'),
+  new Date('2025-07-14'),
+  new Date('2025-07-21'),
+].map(setToMidnight);
+
+// Contoh data libur nasional
+const holidays = [
+  { date: setToMidnight(new Date('2025-04-01')), name: 'Hari Libur Contoh' },
+  // tambah data libur lain sesuai kebutuhan
+];
+
+// Contoh data minggu khusus (UTS/UAS)
+const specialWeeks = {
+  8: {
+    name: 'Minggu UTS',
+    startDate: setToMidnight(new Date('2025-05-22')),
+    endDate: setToMidnight(new Date('2025-05-28')),
+  },
+  16: {
+    name: 'Minggu UAS',
+    startDate: setToMidnight(new Date('2025-07-21')),
+    endDate: setToMidnight(new Date('2025-07-24')),
+  }
+};
+
+function hitungPertemuan() {
+  const today = setToMidnight(new Date());
+
   if (today < pertemuanDates[0]) {
     return {
       pertemuan: 0,
@@ -619,12 +678,12 @@ const specialWeeks = {
 
   if (today > pertemuanDates[pertemuanDates.length - 1]) {
     return {
-      pertemuan: 17,
+      pertemuan: pertemuanDates.length + 1,
       status: "Perkuliahan telah berakhir (Sampai 28 Juli 2025)"
     };
   }
 
-  // Cek apakah hari ini libur nasional
+  // Cek hari libur
   const hariLibur = holidays.find(h => h.date.getTime() === today.getTime());
   if (hariLibur) {
     return {
@@ -633,7 +692,7 @@ const specialWeeks = {
     };
   }
 
-  // Cek apakah hari ini termasuk minggu khusus (UTS/UAS)
+  // Cek minggu khusus (UTS/UAS)
   for (const [nomor, info] of Object.entries(specialWeeks)) {
     if (today >= info.startDate && today <= info.endDate) {
       return {
@@ -643,19 +702,27 @@ const specialWeeks = {
     }
   }
 
-  // Cek apakah hari ini termasuk salah satu tanggal pertemuan
+  // Cek hari pertemuan
   const index = pertemuanDates.findIndex(t => t.getTime() === today.getTime());
   if (index !== -1) {
+    const rentang = getWeekRange(pertemuanDates[index]);
     return {
       pertemuan: index + 1,
-      status: `Pertemuan ke-${index + 1}`
+      status: `Pertemuan ke-${index + 1} (${rentang})`
     };
   }
 
-  // Jika bukan hari pertemuan dan bukan libur dan bukan UTS/UAS
+  // Jika bukan pertemuan, libur, atau minggu khusus
   return {
     pertemuan: -1,
     status: "Bukan hari perkuliahan"
+  };
+}
+
+// Contoh penggunaan:
+console.log(hitungPertemuan());
+console.log(generatePertemuanRanges(pertemuanDates));
+
     };
   }
 

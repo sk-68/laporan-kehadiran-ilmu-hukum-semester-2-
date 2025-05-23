@@ -611,10 +611,11 @@ const specialWeeks = {
   }
 
   // Fungsi untuk menghitung pertemuan
-  function hitungPertemuan() {
+ function hitungPertemuan() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0); // Pastikan jam nol untuk perbandingan yang akurat
 
+  // Cek apakah hari ini sebelum atau setelah masa kuliah
   if (today < pertemuanDates[0]) {
     return {
       pertemuan: 0,
@@ -629,20 +630,27 @@ const specialWeeks = {
     };
   }
 
-  const holiday = holidays.find(h =>
-    h.date.getTime() === today.getTime()
-  );
-  if (holiday) {
+  // Cek apakah hari ini libur nasional
+  const hariLibur = holidays.find(h => h.date.getTime() === today.getTime());
+  if (hariLibur) {
     return {
       pertemuan: -1,
-      status: `Libur Nasional: ${holiday.name}`
+      status: `Libur Nasional: ${hariLibur.name}`
     };
   }
 
-  const index = pertemuanDates.findIndex(t =>
-    t.getTime() === today.getTime()
-  );
+  // Cek apakah hari ini termasuk minggu khusus (UTS/UAS)
+  for (const [nomor, info] of Object.entries(specialWeeks)) {
+    if (today >= info.startDate && today <= info.endDate) {
+      return {
+        pertemuan: parseInt(nomor),
+        status: `${info.name} (Minggu ke-${nomor})`
+      };
+    }
+  }
 
+  // Cek apakah hari ini termasuk salah satu tanggal pertemuan
+  const index = pertemuanDates.findIndex(t => t.getTime() === today.getTime());
   if (index !== -1) {
     return {
       pertemuan: index + 1,
@@ -650,6 +658,7 @@ const specialWeeks = {
     };
   }
 
+  // Jika bukan hari pertemuan dan bukan libur dan bukan UTS/UAS
   return {
     pertemuan: -1,
     status: "Bukan hari perkuliahan"

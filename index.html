@@ -265,33 +265,39 @@
   ],
   
   specialWeeks: {
-    2: { date: setToMidnight(new Date('2025-04-07')), name: 'Pertemuan ke-2' },
-    3: { date: setToMidnight(new Date('2025-04-14')), name: 'Pertemuan ke-3' },
-    4: { date: setToMidnight(new Date('2025-04-21')), name: 'Pertemuan ke-4' },
-    5: { date: setToMidnight(new Date('2025-04-28')), name: 'Pertemuan ke-5' },
-    6: { date: setToMidnight(new Date('2025-05-05')), name: 'Pertemuan ke-6' },
-    7: { date: setToMidnight(new Date('2025-05-12')), name: 'Pertemuan ke-7' },
-    8: { date: setToMidnight(new Date('2025-05-19')), name: 'Pertemuan ke-8' },
-    // Ujian Tengah Semester, minggu khusus 22 Mei - 28 Mei
-    8: { date: setToMidnight(new Date('2025-05-22')), name: 'Ujian Tengah Semester' }, 
-    8: { date: setToMidnight(new Date('2025-05-23')), name: 'Ujian Tengah Semester' },
-    8: { date: setToMidnight(new Date('2025-05-24')), name: 'Ujian Tengah Semester' },
-    8: { date: setToMidnight(new Date('2025-05-25')), name: 'Ujian Tengah Semester' },
-    8: { date: setToMidnight(new Date('2025-05-26')), name: 'Ujian Tengah Semester' },
-    8: { date: setToMidnight(new Date('2025-05-27')), name: 'Ujian Tengah Semester' },
-    8: { date: setToMidnight(new Date('2025-05-28')), name: 'Ujian Tengah Semester' },
-    // Pertemuan lanjut setelah UTS
-    9: { date: setToMidnight(new Date('2025-06-02')), name: 'Pertemuan ke-9' },
-    10: { date: setToMidnight(new Date('2025-06-09')), name: 'Pertemuan ke-10' },
-    11: { date: setToMidnight(new Date('2025-06-16')), name: 'Pertemuan ke-11' },
-    12: { date: setToMidnight(new Date('2025-06-23')), name: 'Pertemuan ke-12' },
-    13: { date: setToMidnight(new Date('2025-06-30')), name: 'Pertemuan ke-13' },
-    14: { date: setToMidnight(new Date('2025-07-07')), name: 'Pertemuan ke-14' },
-    15: { date: setToMidnight(new Date('2025-07-14')), name: 'Pertemuan ke-15' },
-    16: { date: setToMidnight(new Date('2025-07-21')), name: 'Pertemuan ke-16' },
-    // Ujian Akhir Semester 21 Juli - 24 Juli 2025
-    16: { date: setToMidnight(new Date('2025-07-21')), name: 'Ujian Akhir Semester' },
-    16: { date: setToMidnight(new Date('2025-07-24')), name: 'Ujian Akhir Semester' },
+   { week: 1, date: setToMidnight('2025-03-17'), name: 'Pertemuan ke-1' },
+    { week: 2, date: setToMidnight('2025-04-07'), name: 'Pertemuan ke-2' },
+    { week: 3, date: setToMidnight('2025-04-14'), name: 'Pertemuan ke-3' },
+    { week: 4, date: setToMidnight('2025-04-21'), name: 'Pertemuan ke-4' },
+    { week: 5, date: setToMidnight('2025-04-28'), name: 'Pertemuan ke-5' },
+    { week: 6, date: setToMidnight('2025-05-05'), name: 'Pertemuan ke-6' },
+    { week: 7, date: setToMidnight('2025-05-12'), name: 'Pertemuan ke-7' },
+    { week: 8, date: setToMidnight('2025-05-19'), name: 'Pertemuan ke-8' },
+    
+    // Ujian Tengah Semester (UTS)
+    { week: 9, date: setToMidnight('2025-05-22'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-23'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-24'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-25'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-26'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-27'), name: 'Ujian Tengah Semester' },
+    { week: 9, date: setToMidnight('2025-05-28'), name: 'Ujian Tengah Semester' },
+    
+    // Pertemuan setelah UTS
+    { week: 10, date: setToMidnight('2025-06-02'), name: 'Pertemuan ke-9' },
+    { week: 11, date: setToMidnight('2025-06-09'), name: 'Pertemuan ke-10' },
+    { week: 12, date: setToMidnight('2025-06-16'), name: 'Pertemuan ke-11' },
+    { week: 13, date: setToMidnight('2025-06-23'), name: 'Pertemuan ke-12' },
+    { week: 14, date: setToMidnight('2025-06-30'), name: 'Pertemuan ke-13' },
+    { week: 15, date: setToMidnight('2025-07-07'), name: 'Pertemuan ke-14' },
+    { week: 16, date: setToMidnight('2025-07-14'), name: 'Pertemuan ke-15' },
+    { week: 17, date: setToMidnight('2025-07-21'), name: 'Pertemuan ke-16' },
+    
+    // Ujian Akhir Semester (UAS)
+    { week: 18, date: setToMidnight('2025-07-21'), name: 'Ujian Akhir Semester' },
+    { week: 18, date: setToMidnight('2025-07-22'), name: 'Ujian Akhir Semester' },
+    { week: 18, date: setToMidnight('2025-07-23'), name: 'Ujian Akhir Semester' },
+    { week: 18, date: setToMidnight('2025-07-24'), name: 'Ujian Akhir Semester' },
       }
     };
 

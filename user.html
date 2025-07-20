@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Hijriah</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/build/moment-hijri.min.js"></script>
+</head>
+<body>
+  <div>
+    <h2 style="text-align:center;">Kalender Hijriah (User)</h2>
+    <div style="text-align:center;" id="clock" class="clock"></div>
+    <div style="text-align:center; margin-top: 20px;" id="hijri-date"></div>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    function updateHijriDate() {
+      const now = moment();
+      const hijri = now.format('iD iMMMM iYYYY');
+      document.getElementById("hijri-date").innerText = "Hari ini: " + hijri + " H";
+    }
+
+    setInterval(updateHijriDate, 1000);
+    updateHijriDate();
+  </script>
+</body>
+</html>

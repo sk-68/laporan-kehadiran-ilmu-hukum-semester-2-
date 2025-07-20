@@ -17,10 +17,12 @@
       const user = document.getElementById("username").value;
       const pass = document.getElementById("password").value;
 
-      if (user === "admin" && pass === "admin") {
+      if (user === "admin" && pass === "admin123") {
         window.location.href = "admin.html";
-      } else if (user === "user" && pass === "user") {
+      } else if (user === "user" && pass === "user123") {
         window.location.href = "user.html";
+       } else if (user === "budha" && pass === "budha123") {
+      window.location.href = "budha.html";
       } else {
         alert("Login gagal. Coba lagi.");
       }
@@ -28,3 +30,4 @@
   </script>
 </body>
 </html>
+
